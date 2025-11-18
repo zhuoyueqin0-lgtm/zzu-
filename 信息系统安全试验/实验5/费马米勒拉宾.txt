@@ -1,0 +1,121 @@
+
+费马定理：
+
+定义了一个 generate_prime() 函数，它使用 random.randint() 函数随机生成一个在 n 到 2n-1 之间的整数，然后调用 is_prime() 函数判断这个数是否为素数。如果这个数是素数，就返回它；否则就继续生成随机数，直到找到一个素数为止。最后，程序调用 generate_prime() 函数生成一个大素数，
+
+import random  
+  
+def generate_prime(n):  
+    while True:  
+        p = random.randint(n, 2*n-1)  
+        if is_prime(p):  
+            return p  
+  
+def is_prime(n):  
+    if n < 2:  
+        return False  
+    for i in range(2, int(n**0.5)+1):  
+        if n % i == 0:  
+            return False  
+    return True  
+  
+n = 1000000  
+print(generate_prime(n))
+
+
+------------------------------------------
+#费马小定理告诉我们，若n满足：a^(n-1) % n==1 则n有很大概率为素数（反例是伪素数）若是n不满足这个式子则n一定为合数。
+#那么我们随机几次a的值，再加以验证，这样就可以得到极为正确（但不一定正确）的结果。
+
+import random
+
+for n in range(100000,999999):
+    flag=0
+    for i in range(10):
+        a=random.randint(2,100000)
+        if a**(n-1)%n==1:
+            flag=1
+    if flag==1:
+        print(n)
+
+
+------------------------------------------
+
+费马小定理和费马大定理在生成素数方面的差异主要体现在以下几个方面：
+
+适用范围：费马小定理仅适用于素数的幂次减1的形式，即对于任意一个正整数n，如果存在整数a使得a^n=1+b*n，那么n必须是素数。而费马大定理则适用于所有大于2的整数n，即对于任意大于2的整数n，不存在整数x、y、z满足x^n+y^n=z^n。
+生成素数的范围：费马小定理可以生成所有的素数，因为所有素数的幂次减1都是费马小定理的形式。而费马大定理则不能生成所有的素数，因为它只适用于大于2的整数n，小于2的整数n不是素数。
+证明难度：费马大定理的证明难度远大于费马小定理。费马小定理的证明相对简单，而费马大定理的证明涉及到复杂的数学推导和证明过程，直到1995年才由英国数学家安德鲁·怀尔斯提出了一种新的证明方法，被公认为是费马大定理的首个完整证明。
+综上所述，费马小定理和费马大定理在生成素数方面存在明显的差异。
+
+------------------------------------------
+
+米勒拉宾算法
+
+import random  
+  
+def miller_rabin(n, k):  
+    if n < 2 or n % 2 == 0:  
+        return False  
+    r, s = 0, n - 1  
+    while s % 2 == 0:  
+        r += 1  
+        s //= 2  
+    for _ in range(k):  
+        a = random.randint(2, n - 2)  
+        x = pow(a, s, n)  
+        if x == 1 or x == n - 1:  
+            continue  
+        for _ in range(r - 1):  
+            x = pow(x, 2, n)  
+            if x == n - 1:  
+                break  
+        else:  
+            return False  
+    return True
+
+----------------------------------------
+import random
+
+def miller_rabin(n,k=5):
+    if n<=1 or n==4:
+        return False
+    
+    if n<=3:
+        return True
+    
+    d=n-1
+    while d%2==0:
+        d//=2
+    
+    for _ in range(k):
+        a=random.randint(2,n-2)
+        x=pow(a,d,n)
+
+        if x==1 or x==n-1:
+            continue
+
+        while d!=n-1:
+            x=pow(x,2,n)
+            d=d*2
+
+            if x==n-1:
+                break
+        else:
+            return False
+    
+    return True
+
+def generate_large_prime(bits):
+    while True:
+        p=random.getrandbits(bits)
+        if p%2==0:
+            p=p+1
+
+        p|=(1<<bits-1)|1
+
+        if miller_rabin(p):
+            return p
+
+large_prime=generate_large_prime(2048)
+print(large_prime)

@@ -1,0 +1,56 @@
+
+import random
+ 
+def is_prime(n):
+    if n == 2:
+        return True
+    for i in range(2, int(n/2+1)):
+        if n%i == 0:
+            return False
+    return True
+ 
+#get prime p and q
+def get_pq():
+    p, q = 0, 0
+    while True:
+        p, q = random.randint(10, 100), random.randint(10, 100)
+        if is_prime(int(p)) and is_prime(int(q)) and int(p)!=(q) :
+            return int(p),int(q)
+ 
+#get e and d
+def get_ed(p,q):
+    phn = (p-1)*(q-1)
+    while True:
+        e = random.randint(2, 50)
+        if is_prime(e):
+            for d in range(2, 1000):
+                if e*d % phn == 1:
+                    return e,d
+ 
+p,q = get_pq()
+n = p*q
+e,d = get_ed(p,q)
+print("public key: (n,e)=%d,%d" % (n,e))
+print("private key: (n,d)=%d,%d" % (n,d))
+m = random.randint(2, 100)
+c = m**e%n
+print("message m=%s" % m)
+print("encrypt:\n c =%s" % c)
+print("decrypt:\n m =%s" % (c**d%n))
+
+
+
+#费马小定理告诉我们，若n满足：a^(n-1) % n==1 则n有很大概率为素数（反例是伪素数）若是n不满足这个式子则n一定为合数。
+#那么我们随机几次a的值，再加以验证，这样就可以得到极为正确（但不一定正确）的结果。
+
+import random
+
+for n in range(100000,999999):
+    flag=0
+    for i in range(10):
+        a=random.randint(2,100000)
+        if a**(n-1)%n==1:
+            flag=1
+    if flag==1:
+        print(n)
+
